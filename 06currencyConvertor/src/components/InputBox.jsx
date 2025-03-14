@@ -37,7 +37,7 @@ function InputBox({
                     value={selectCurrency}
                     onChange={(e) => onCurrencyChange && onCurrencyChange(e.target.value)}
                     disabled={currencyDisable}
-                >
+>
                     
                     {currencyOptions.map((currency) => (
                         //   If you want to optimize the performace of your LOOP to repeate the same element you must use  key=[]
