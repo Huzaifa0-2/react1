@@ -7,9 +7,9 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <h1 className='bg-olive-400 p-4'>Huzaifa | React Router</h1>
-    </>
+   <>
+    <h1 className='bg-purple-700 text-white text-xl'>Huzaifa</h1>
+   </>
   )
 }
 
