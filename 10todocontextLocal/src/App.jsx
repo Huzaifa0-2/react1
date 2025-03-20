@@ -33,17 +33,17 @@ function App() {
 
   return (
     <TodoProvider value={{ todos, addTodo, deleteTodo, updateTodo, toggleComplete }}>
-      <div className="bg-[#172842] min-h-screen py-8">
-        <div className="w-full max-w-2xl mx-auto shadow-md rounded-lg px-4 py-3 text-white">
-          <h1 className="text-2xl font-bold text-center mb-8 mt-2">Manage Your Todos</h1>
-          <div className="mb-4">
-            {/* Todo form goes here */}
+      <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] min-h-screen py-8">
+        <div className="w-full max-w-2xl mx-auto shadow-2xl rounded-lg px-6 py-6 bg-[#0f3460] text-white">
+          <h1 className="text-4xl font-bold text-center mb-8 mt-2 bg-clip-text text-transparent bg-gradient-to-r from-[#00b4db] to-[#0083b0]">
+            Manage Your Todos
+          </h1>
+          <div className="mb-6">
             <TodoForm />
           </div>
-          <div className="flex flex-wrap gap-y-3">
-            {/*Loop and Add TodoItem here */}
+          <div className="flex flex-col gap-y-4">
             {todos.map((todo) => (
-              <div key={todo.id}  className="w-full">
+              <div key={todo.id} className="w-full">
                 <TodoItem todo={todo} />
               </div>
             ))}
@@ -51,7 +51,7 @@ function App() {
         </div>
       </div>
     </TodoProvider>
-  )
+  );
 }
 
 export default App
