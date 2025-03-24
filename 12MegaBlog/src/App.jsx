@@ -4,6 +4,7 @@ import './App.css'
 import authService from './appwrite/auth'
 import { login, logout } from './store/authSlice'
 import Footer from './components/Footer/Footer'
+import Header from './components/Header/Header'
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -27,7 +28,7 @@ return !loading ? (
     <div className="w-full block">
       <Header />
       <main>
-        TODO: {/* <Outlet /> */}
+        TODO: <Outlet />
       </main>
       <Footer />
     </div>
