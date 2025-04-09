@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import Quiz from './components/quiz/Quiz'
+import MyTimer from './components/timer/Timer'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // const time = new Date();
+  // time.setSeconds(time.getSeconds() + 600); // 10 minutes timer
 
   return (
     <>
+      {/* <MyTimer expiryTimestamp={time} /> */}
       <Quiz />
     </>
   )
