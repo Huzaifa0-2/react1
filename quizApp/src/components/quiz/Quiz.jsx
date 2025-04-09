@@ -17,6 +17,7 @@ const Quiz = () => {
     const [quizStarted, setQuizStarted] = useState(false);
     const [quizEnded, setQuizEnded] = useState(false);
     const [showResult, setShowResult] = useState("");
+    const [skippedQuestions, setSkippedQuestions] = useState([]);
 
     const dispatch = useDispatch();
     const quizArray = useSelector((state) => state.questionsArr);
@@ -48,7 +49,27 @@ const Quiz = () => {
     //     // }
     // };
 
+    // const handleNextQuestion = () => {
+    //     if (currentQuestions < quizArray.length - 1) {
+    //         setCurrentQuestions(prev => prev + 1);
+    //         setOptionDisabled(false);
+    //         setSelectedOption(null);
+    //     } else {
+    //         setQuizEnded(true);
+    //         if (score > 2) {
+    //             setShowResult("Congrats! You passed the quiz.");
+    //         } else {
+    //             setShowResult("Sorry! You failed the quiz.");
+    //         }
+    //     }
+    // };
+
     const handleNextQuestion = () => {
+        // Track if user skipped (moved forward without answering)
+        if (!optionDisabled && !skippedQuestions.includes(currentQuestions)) {
+            setSkippedQuestions([...skippedQuestions, currentQuestions]);
+        }
+
         if (currentQuestions < quizArray.length - 1) {
             setCurrentQuestions(prev => prev + 1);
             setOptionDisabled(false);
@@ -82,7 +103,7 @@ const Quiz = () => {
     const getButtonClass = (option) => {
         const baseClass = "w-full text-left transition-all duration-300 transform hover:scale-[1.02] font-medium rounded-xl text-sm px-6 py-4 mb-3 border ";
         const activeClass = "ring-1 ring-opacity-50 ring-offset-1 ";
-    
+
         if (optionDisabled) {
             if (option === quizArray[currentQuestions].correct_answer) {
                 return baseClass + activeClass + "bg-green-900/30 text-green-400 ring-green-400 shadow-lg shadow-green-500/20 border-green-400/30";
@@ -92,10 +113,10 @@ const Quiz = () => {
             }
             return baseClass + "bg-gray-800/50 text-gray-500 border-gray-700";
         }
-    
+
         return baseClass + "bg-black text-gray-300 hover:bg-gray-700/80 shadow-md hover:shadow-gray-500/10 border-gray-700";
     };
-    
+
 
     const progressPercentage = ((currentQuestions) / quizArray.length) * 100;
     const wrongAnswerBar = (wrongAnswer / currentQuestions) * 100;
@@ -105,13 +126,13 @@ const Quiz = () => {
         return (
             <div className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
                 {/* Neon cursor glow effect */}
-                <div 
+                <div
                     className="fixed pointer-events-none w-40 h-40 rounded-full bg-green-700 blur-3xl transition-all duration-300 ease-out"
                     style={{
                         transform: `translate(${cursorPosition.x - 192}px, ${cursorPosition.y - 192}px)`,
                     }}
                 />
-                
+
                 <div className="max-w-2xl mx-auto border border-green-400/20 bg-black backdrop-blur-lg rounded-3xl shadow-2xl shadow-green-500/10 overflow-hidden relative z-10">
                     <div className='p-8 text-center space-y-6'>
                         <h1 className='text-4xl font-bold text-green-400 neon-text'>Quiz Completed!</h1>
@@ -121,6 +142,29 @@ const Quiz = () => {
                             <p>Final Score: <span className="text-blue-400 font-bold">{score}</span></p>
                             <p className={`text-2xl mt-4 font-medium ${score > 2 ? 'text-green-400' : 'text-red-400'}`}>{showResult}</p>
                         </div>
+                        {/* Add this before restart button */}
+                        {skippedQuestions.length > 0 && (
+                            <div className="bg-gray-800/50 p-4 rounded-lg border border-yellow-400/20">
+                                <p className="text-yellow-400 mb-2">
+                                    You skipped {skippedQuestions.length} question{skippedQuestions.length !== 1 ? 's' : ''}
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        setCurrentQuestions(skippedQuestions[0]);
+                                        setSkippedQuestions(skippedQuestions.slice(1));
+                                        setOptionDisabled(false);
+                                        setSelectedOption(null);
+                                        setQuizEnded(false);
+                                    }}
+                                    className="text-green-400 hover:text-green-300 underline flex items-center justify-center gap-1"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                    </svg>
+                                    Attempt Skipped Questions
+                                </button>
+                            </div>
+                        )}
                         <button
                             className='relative overflow-hidden bg-black text-green-400 px-8 py-4 rounded-full cursor-pointer border-2 border-green-400/50 hover:border-green-400 text-lg font-medium transition-all duration-500 hover:shadow-lg hover:shadow-green-500/20 group'
                             onClick={restartQuiz}
@@ -137,39 +181,39 @@ const Quiz = () => {
     if (!quizStarted) {
         return (
             <div className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-            
-                <div 
+
+                <div
                     className="fixed pointer-events-none w-40 h-40 rounded-full bg-gradient-to-br from-green-400 to-green-700 opacity-20 blur-xl transition-all duration-200 ease-out"
                     style={{
                         transform: `translate(${cursorPosition.x - 80}px, ${cursorPosition.y - 80}px)`,
                     }}
                 />
-                
-                {/* Main container with Nuxt-inspired styling */}
+
+
                 <div className="max-w-2xl mx-auto border border-green-400/10 bg-gradient-to-br from-black to-gray-900/80 backdrop-blur- md rounded-3xl shadow-2xl shadow-green-500/5 overflow-hidden relative z-10 transition-all duration-300 hover:shadow-green-500/20 hover:border-green-400/30 group">
                     {/* Inner glow effect on hover */}
                     <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
                         <div className="absolute -inset-2 bg-gradient-to-br from-green-500/10 to-transparent rounded-3xl blur-md" />
                     </div>
-                    
+
                     <div className='p-8 text-center space-y-6 relative z-20'>
-                        {/* Title with pulsing animation */}
+
                         <h1 className='text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600 mb-2 animate-pulse-slow'>
                             Test Your Knowledge
                         </h1>
-                        
-                        {/* Subtitle with subtle glow */}
+
+
                         <p className="text-gray-400/80 text-lg mb-8 transition-all duration-300 group-hover:text-gray-300">
                             Ready to challenge yourself with {quizArray.length} questions?
                         </p>
-                        
-                        {/* Enhanced start button */}
+
+
                         <div className="relative inline-block group/button">
                             {/* Button glow effect */}
                             <div className="absolute -inset-1 rounded-full bg-green-600/30 blur-md opacity-0 group-hover/button:opacity-100 transition-opacity duration-500" />
-                            
-                            {/* Button main */}
-                            <button 
+
+
+                            <button
                                 className="relative bg-black text-green-400 px-10 py-4 rounded-full cursor-pointer border border-green-400/30 hover:border-green-400 text-lg font-medium transition-all duration-500 hover:text-green-300 group-hover/button:shadow-lg group-hover/button:shadow-green-500/30"
                                 onClick={() => setQuizStarted(true)}
                             >
@@ -180,7 +224,7 @@ const Quiz = () => {
                                 <span className="absolute inset-0 bg-gradient-to-br from-green-500/0 via-green-500/5 to-green-500/0 transition-all duration-500 rounded-full opacity-0 group-hover/button:opacity-100" />
                             </button>
                         </div>
-                        
+
                         {/* Footer with subtle grid pattern */}
                         <div className="pt-8 mt-8 border-t border-gray-800/50 relative">
                             <div className="absolute inset-0 overflow-hidden rounded-b-3xl">
@@ -192,7 +236,7 @@ const Quiz = () => {
                         </div>
                     </div>
                 </div>
-    
+
                 {/* Add this to your global CSS or CSS-in-JS */}
                 <style jsx global>{`
                     @keyframes pulse-slow {
@@ -222,15 +266,15 @@ const Quiz = () => {
         return (
             <div className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
                 {/* Neon cursor glow effect */}
-                <div 
+                <div
                     className="fixed pointer-events-none w-40 h-40 rounded-full bg-green-700 blur-3xl transition-all duration-300 ease-out"
                     style={{
                         transform: `translate(${cursorPosition.x - 192}px, ${cursorPosition.y - 192}px)`,
                     }}
                 />
-                
+
                 <div className="max-w-2xl mx-auto relative z-10">
-                    {/* Glass Card Container */}
+
                     <div className="max-w-2xl mx-auto border border-green-400/10 bg-gradient-to-br from-black to-gray-900/80 backdrop-blur-md rounded-3xl shadow-2xl shadow-green-500/5 overflow-hidden relative z-10 transition-all duration-300 hover:shadow-green-500/20 hover:border-green-400/30 group">
                         {/* Progress Bar */}
                         <div className="h-1.5 bg-gray-700/50">
@@ -295,13 +339,24 @@ const Quiz = () => {
                                 <button
                                     onClick={handleNextQuestion}
                                     disabled={!optionDisabled}
-                                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                                        optionDisabled && currentQuestions < quizArray.length
-                                            ? "bg-green-600/90 hover:bg-green-600 text-white shadow-lg hover:shadow-green-500/30 border border-green-400/50"
-                                            : "bg-gray-700 text-gray-500 cursor-not-allowed border border-gray-600"
-                                    }`}
+                                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${optionDisabled && currentQuestions < quizArray.length
+                                        ? "bg-green-600/90 hover:bg-green-600 text-white shadow-lg hover:shadow-green-500/30 border border-green-400/50"
+                                        : "bg-gray-700 text-gray-500 cursor-not-allowed border border-gray-600"
+                                        }`}
                                 >
                                     {currentQuestions < quizArray.length - 1 ? 'Next Question →' : 'Show Result'}
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (!skippedQuestions.includes(currentQuestions)) {
+                                            setSkippedQuestions([...skippedQuestions, currentQuestions]);
+                                        }
+                                        handleNextQuestion();
+                                    }}
+                                    disabled={optionDisabled}
+                                    className={`px-4 py-2 ml-3 rounded-lg border ${optionDisabled ? 'border-gray-600 text-gray-500' : 'border-yellow-400 text-yellow-400 hover:bg-yellow-400/10'}`}
+                                >
+                                    Skip
                                 </button>
                             </div>
                         </div>
